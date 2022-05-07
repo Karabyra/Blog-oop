@@ -1,46 +1,43 @@
 <?php
 	declare(strict_types=1);
+	use model\Validate;
+	use logs\Logs;
+	use model\Article;
 	include_once('functions.php');
-	$isSend = false;
-	$err = '';
-
+	include_once('setting.php');
+	$validete = new Validate;
+	$log = new Logs;
+	$art = new Article;
+	$filds = ['title' =>  '','content' => ''];
 	if($_SERVER['REQUEST_METHOD'] === 'POST'){
-		$title = trim($_POST['name']);
-		$content = trim($_POST['phone']);
-		addArticle($title,$content);
-		
-		if($title === '' || $content === ''){
-			$err = 'Заполните все поля!';
+		$filds['title'] = $_POST['title'];
+		$filds['content'] = $_POST['content'];
+		$fildsValidate = $validete->trimArrayString($filds);	
+		if($fildsValidate['title'] === '' || $fildsValidate['content'] === ''){
+			$filds['err'] = 'Заполните все поля!';
 		}
-		else if(mb_strlen($title, 'UTF8') < 2){
-			$err = 'Имя не короче 2 символов!';
+		else if(mb_strlen($fildsValidate['title'] , 'UTF8') < 2){
+			$fildsValidate['err'] = 'Имя не короче 2 символов!';
 		}
 		else{
-			$dt = date("Y-d-m H:i:s");
-			$mainBody = "Date: $dt\nPhone: $content\nName: $title";
-			mail('1@1.ru', 'New app on site', $mainBody);
-			$isSend = true;
+			$arrayLog = ['user' => 'ip address =>' . $_SERVER['REMOTE_ADDR'].';'];		
+			$log->createLogs($arrayLog);
+			// header('Location:index.php');
+			dump($filds);
+			$art->AddArticle($filds);
 		}
-	}
-	else{
-		$title = '';
-		$content = '';
 	}
 
 ?>
 <div class="form">
-	<? if($isSend): ?>
-		<p>Your app is done!</p>
-	<? else: ?>
 		<form method="post">
-			Name:<br>
-			<input type="text" name="name" value="<?=$title?>"><br>
-			Phone:<br>
-			<input type="text" name="phone" value="<?=$content?>"><br>
+			Title:<br>
+			<input type="text" name="title" value="<?=$filds['title']?>"><br>
+			Content:<br>
+			<input type="text" name="content" value="<?=$filds['content']?>"><br>
 			<button>Send</button>
-			<p><?=$err?></p>
+			<p><?=$fildsValidate['err'] ?? ''?></p>
 		</form>
-	<? endif; ?>
 </div>
 Form or message here
 <hr>

@@ -2,61 +2,60 @@
 declare(strict_types=1);
 
 namespace model;
+use PDO;
+
 
 class Article{
     public function __construct()
     {
     
     }
-    public function getAticle(): array
-    {
-        return json_decode(file_get_contents('db/articles.json'), true);
-    }
-
-    public 	function addArticle(string $title, string $content) : bool{
-		$articles = getArticles();
-
-		$lastId = end($articles)['id'];
-		$id = $lastId + 1;
-
-		$articles[$id] = [
-			'id' => $id,
-			'title' => $title,
-			'content' => $content
-		];
-
-		saveArticles($articles);
-		return true;
-	}
-
-    public 	function editArticle(array $arrayArt) : bool{
-		$articles = getArticles();
-
-		$articles[$arrayArt['id']] = [
-			'id' => $arrayArt['id'],
-			'title' => $arrayArt['title'],
-			'content' => $arrayArt['content']
-		];
-
-		saveArticles($articles);
-		return true;
-	}
-    public function removeArticle(int $id) : bool{
-		$articles = getArticles();
-
-		if(isset($articles[$id])){
-			unset($articles[$id]);
-			saveArticles($articles);
-			return true;
+	private function dbInstance() : PDO{
+		static $db;	
+		if($db === null){
+			$db = new PDO('mysql:host=localhost;dbname=blog', 'root', '', [
+				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+			]);
+			
+			$db->exec('SET NAMES UTF8');
 		}
 		
-		return false;
+		return $db;
 	}
+	public function AddArticle(array $filds):bool
+	{
+		$db = $this->dbInstance();
+		$sql = "INSERT INTO articles (title,content)VALUE(:title,:content)";
+		$query = $db->prepare($sql,$filds);
 
-    public 	function saveArticles(array $articles) : bool{
-		file_put_contents('db/articles.json', json_encode($articles));
+		$query->execute();
 		return true;
 	}
+	public function getAllArticle():array
+	{
+		$db = $this->dbInstance();	
+		$sql = "SELECT * FROM articles ORDER BY dt_create DESC";
+		$query = $db->prepare($sql);
+		$query->execute();
+		return $query->fetchAll();
+	}
+	public function getArticle(int $id):array
+	{
+		$db = $this->dbInstance();	
+		$sql = "SELECT * FROM articles WHERE id_article = $id";
+		$query = $db->prepare($sql);
+		$query->execute();
+		return $query->fetch();
+	}
+	public function removeArticle(int $id):bool
+	{
+		$db = $this->dbInstance();	
+		$sql = "DELETE FROM articles WHERE id_article = $id";
+		$query = $db->prepare($sql);
+		return $query->execute();
 
+	}
+
+	
 }
 

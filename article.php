@@ -3,11 +3,9 @@
 	use model\Article;
 	include_once('setting.php');
 	try{
-		$Atc = new Article;
-		$articles = $Atc->getAticle();
+		$Atc = new Article;	
 		$id = (int)($_GET['id'] ?? '');
-		$post = $articles[$id] ?? null;
-		$hasPost = ($post !== null);
+		$articles = $Atc->getArticle($id);
 	}
 	catch(Exception $e)
 	{
@@ -16,14 +14,14 @@
 
 ?>
 <div class="content">
-	<? if($hasPost): ?>
+	<? if($articles): ?>
 		<div class="article">
-			<h1><?=$post['title']?></h1>
-			<div><?=$post['content']?></div>
+			<h1><?=$articles['title']?></h1>
+			<div><?=$articles['content']?></div>
 			<hr>
-			<a href="delete.php?id=<?=$id?>">Remove</a>
+			<a href="delete.php?id=<?=$articles['id_article']?>">Remove</a>
 			<hr>
-			<a href="edit.php?id=<?=$id?>">edit</a>
+			<a href="edit.php?id=<?=$articles['id_article']?>">edit</a>
 		</div>
 	<? else: ?>
 		<div class="e404">

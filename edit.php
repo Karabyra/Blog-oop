@@ -1,11 +1,12 @@
 <?php
 declare(strict_types=1);
-
+use logs\Logs;
 include_once('functions.php');	
 include_once('setting.php');	
 
 $isSend = false;
 $err = '';
+$log = new Logs;
 if($_SERVER['REQUEST_METHOD'] === 'GET'){
     $arrayArticlles = getArticles();   
     $articlle  = $arrayArticlles[$_GET['id']] ?? '';
@@ -23,10 +24,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $err = 'Имя не короче 2 символов!';
     }
     else{
-        $dt = date("Y-d-m H:i:s");
-        $mainBody = "Date: $dt\nPhone: {$articlle['title']}\nName:{$articlle['title']}";
-        mail('1@1.ru', 'New app on site', $mainBody);
-        $isSend = true;      
+        $isSend = true; 
+        $arrayLogs= [
+            'user' => 'ip address =>' . $_SERVER['REMOTE_ADDR']. ';',
+            "edit" => 'edit to arrticle;',
+            'isSent' => 'Send article =>' . $isSend . ';',
+         ];
+        $log->createLogs($arrayLogs);
         editArticle($articlle);
     }
     $articlle['title'] ='';
