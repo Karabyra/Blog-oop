@@ -13,7 +13,7 @@ class Article{
 	private function dbInstance() : PDO{
 		static $db;	
 		if($db === null){
-			$db = new PDO('mysql:host=localhost;dbname=blog', 'root', '', [
+			$db = new PDO('mysql:host=localhost;dbname=blogs', 'root', '', [
 				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 			]);
 			
@@ -25,16 +25,29 @@ class Article{
 	public function AddArticle(array $filds):bool
 	{
 		$db = $this->dbInstance();
-		$sql = "INSERT INTO articles (title,content)VALUE(:title,:content)";
-		$query = $db->prepare($sql,$filds);
-
-		$query->execute();
+		$sql = "INSERT INTO `articles`( `id_category`, `title`, `content` ) VALUES (:cat,:t,:c)";
+		$query = $db->prepare($sql);
+		$params = [
+			'cat'=> $filds['id_category'],
+			't'=> $filds['title'],
+			'c'=> $filds['content']
+		];
+		$query->execute($params);
 		return true;
 	}
 	public function getAllArticle():array
 	{
 		$db = $this->dbInstance();	
 		$sql = "SELECT * FROM articles ORDER BY dt_create DESC";
+		$query = $db->prepare($sql);
+		$query->execute();
+		return $query->fetchAll();
+	}
+	
+	public function getAllCategories():array
+	{
+		$db = $this->dbInstance();	
+		$sql = "SELECT * FROM categoryes ";
 		$query = $db->prepare($sql);
 		$query->execute();
 		return $query->fetchAll();

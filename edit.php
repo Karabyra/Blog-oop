@@ -1,56 +1,54 @@
 <?php
 declare(strict_types=1);
 use logs\Logs;
+use model\Article;
+use model\Validate;
 include_once('functions.php');	
 include_once('setting.php');	
 
-$isSend = false;
-$err = '';
-$log = new Logs;
-if($_SERVER['REQUEST_METHOD'] === 'GET'){
-    $arrayArticlles = getArticles();   
-    $articlle  = $arrayArticlles[$_GET['id']] ?? '';
-}
-if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
-    $articlle['title']= trim($_POST['title']);
-    $articlle['content'] = trim($_POST['content']);
-    $articlle['id'] = (int)$_GET['id']??'';
-    
-    if($articlle['title'] === '' || $articlle['content'] === ''){
-        $err = 'Заполните все поля!';
-    }
-    else if(mb_strlen($articlle['title'], 'UTF8') < 2){
-        $err = 'Имя не короче 2 символов!';
+$validate = new Validate;
+$log = new Logs;
+$art = new Article;
+$categoryes = $art->getAllCategories(); 
+if($_SERVER['REQUEST_METHOD'] === 'GET'){
+    $id  = (int)$_GET['id'] ?? '';
+    $article = $art->getArticle($id);
+}
+if($_SERVER['REQUEST_METHOD'] === 'POST'){ 
+    $editArticle['title'] = $_POST['title'] ?? '';
+    $editArticle['content'] = $_POST['content'] ?? '';
+    $editArticle['id_category'] = $_POST['category'] ?? '';
+    $editArticle = $validate->trimArrayString($editArticle);
+    dump($editArticle);
+    if($validate->checkError($editArticle)){
+        echo 'Exception';
+        exit;
     }
     else{
-        $isSend = true; 
         $arrayLogs= [
             'user' => 'ip address =>' . $_SERVER['REMOTE_ADDR']. ';',
             "edit" => 'edit to arrticle;',
-            'isSent' => 'Send article =>' . $isSend . ';',
          ];
         $log->createLogs($arrayLogs);
-        editArticle($articlle);
-    }
-    $articlle['title'] ='';
-    $articlle['content'] ='';
-}
 
+    }
+}
 ?>
 <div class="form">
-	<? if($isSend): ?>
-		<p>Your app is done!</p>
-	<? else: ?>
 		<form method="post">
 			Name:<br>
-			<input type="text" name="title" value="<?=$articlle['title']?>"><br>
+			<input type="text" name="title" value="<?=$article['title']?>"><br>
 			Phone:<br>
-			<input type="text" name="content" value="<?=$articlle['content']?>"><br>
+			<input type="text" name="content" value="<?=$article['content']?>"><br>
+            <select name='category'>
+                <?foreach($categoryes as $category): ?>
+					<option value=<?=$category['id_category']?>><?= $category['category']?></option>
+				<? endforeach;?>
+            </select>
 			<button>Send</button>
-			<p><?=$err?></p>
+			<p><?=$err=''?></p>
 		</form>
-	<? endif; ?>
 </div>
 Form or message here
 <hr>

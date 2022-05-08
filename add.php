@@ -9,9 +9,12 @@
 	$log = new Logs;
 	$art = new Article;
 	$filds = ['title' =>  '','content' => ''];
+	$categoryes = $art->getAllCategories();
+	
 	if($_SERVER['REQUEST_METHOD'] === 'POST'){
-		$filds['title'] = $_POST['title'];
-		$filds['content'] = $_POST['content'];
+		$filds['title'] = $_POST['title']??"";
+		$filds['content'] = $_POST['content']?? "";
+		$filds['id_category'] = $_POST['category']?? "";
 		$fildsValidate = $validete->trimArrayString($filds);	
 		if($fildsValidate['title'] === '' || $fildsValidate['content'] === ''){
 			$filds['err'] = 'Заполните все поля!';
@@ -20,11 +23,12 @@
 			$fildsValidate['err'] = 'Имя не короче 2 символов!';
 		}
 		else{
-			$arrayLog = ['user' => 'ip address =>' . $_SERVER['REMOTE_ADDR'].';'];		
+			$arrayLog = ['user' => 'ip address =>' . $_SERVER['REMOTE_ADDR'].';'];
+		
 			$log->createLogs($arrayLog);
-			// header('Location:index.php');
-			dump($filds);
+			header('Location:index.php');
 			$art->AddArticle($filds);
+		
 		}
 	}
 
@@ -35,6 +39,12 @@
 			<input type="text" name="title" value="<?=$filds['title']?>"><br>
 			Content:<br>
 			<input type="text" name="content" value="<?=$filds['content']?>"><br>
+			
+				<select name='category'>
+				<?foreach($categoryes as $category): ?>
+					<option value=<?=$category['id_category']?>><?= $category['category']?></option>
+				<? endforeach;?>
+				</select>
 			<button>Send</button>
 			<p><?=$fildsValidate['err'] ?? ''?></p>
 		</form>

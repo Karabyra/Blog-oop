@@ -13,6 +13,16 @@ class Validate{
         }
         return $resalt;
     }
+    public function checkError(array $filds) :bool
+    {   
+        if($filds['title'] === '' || $filds['content'] === ''){
+           return true;
+        }
+        else if(mb_strlen($filds['title'], 'UTF8') < 2){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 }
-
-$a = new Validate();

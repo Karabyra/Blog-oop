@@ -5,6 +5,7 @@ function dump($item)
     echo "<pre>";
     print_r($item);
     echo "<pre>";
+    exit;
 }
 
 
