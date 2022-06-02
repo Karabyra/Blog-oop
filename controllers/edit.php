@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
+
 use logs\Logs;
 use model\Article;
-use model\Validate;
-include_once('functions.php');	
+use core\Validate;
+use FFI\Exception;
 include_once('setting.php');	
 
 
@@ -16,40 +17,24 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
     $article = $art->getArticle($id);
 }
 if($_SERVER['REQUEST_METHOD'] === 'POST'){ 
+    $editArticle['id_article'] = $_GET['id'] ?? '';
     $editArticle['title'] = $_POST['title'] ?? '';
     $editArticle['content'] = $_POST['content'] ?? '';
     $editArticle['id_category'] = $_POST['category'] ?? '';
     $editArticle = $validate->trimArrayString($editArticle);
-    dump($editArticle);
-    if($validate->checkError($editArticle)){
-        echo 'Exception';
+    if(!$validate->checkError($editArticle)){
+        echo $e->getMessage();
         exit;
     }
     else{
+        $art->editArticle($editArticle);
         $arrayLogs= [
             'user' => 'ip address =>' . $_SERVER['REMOTE_ADDR']. ';',
             "edit" => 'edit to arrticle;',
          ];
         $log->createLogs($arrayLogs);
-
+        header('Location:index.php');
     }
 }
+include('view/v_edit.php');
 ?>
-<div class="form">
-		<form method="post">
-			Name:<br>
-			<input type="text" name="title" value="<?=$article['title']?>"><br>
-			Phone:<br>
-			<input type="text" name="content" value="<?=$article['content']?>"><br>
-            <select name='category'>
-                <?foreach($categoryes as $category): ?>
-					<option value=<?=$category['id_category']?>><?= $category['category']?></option>
-				<? endforeach;?>
-            </select>
-			<button>Send</button>
-			<p><?=$err=''?></p>
-		</form>
-</div>
-Form or message here
-<hr>
-<a href="index.php">Move to main page</a>

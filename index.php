@@ -1,32 +1,17 @@
 <?php
-	declare(strict_types=1);
-
-	use model\Article;
-	use logs\Logs;
-	include_once('setting.php');
-	include_once('functions.php');
-	
+use core\Validate;
+include('setting.php');
 try{
-	$Arc = new Article;
-	$articles = $Arc->getAllArticle();
-}	
+    $cname = $_GET['c'] ?? 'index';
+    $path = "controllers/$cname.php";
+    Validate::isFile($path);
+    Validate::checkNameController($cname);   
+    include_once("$path");
+}
 catch(Exception $e)
 {
-	 echo $e->getMessage();
+    $err = $e->getMessage();
+    include_once('view/v_err.php');
 }
 
 
-	
-
-?>
-<a href="add.php">Add article</a>
-<hr>
-<div class="articles">
-	<? foreach($articles as $article): ?>
-		<div class="article">
-			<h3><?=$article['title']?></h3>
-			<a href="article.php?id=<?=$article['id_article']?>">Read more</a>
-		</div>
-	<? endforeach; ?>
-</div>
-	

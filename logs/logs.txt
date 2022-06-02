@@ -73,3 +73,15 @@ ip address =>127.0.0.1;DATE ->2022-08-05 17:59:26
 ip address =>127.0.0.1;edit to arrticle;Send article =>;DATE ->2022-08-05 19:21:58
 ip address =>127.0.0.1;edit to arrticle;DATE ->2022-08-05 19:22:35
 ip address =>127.0.0.1;edit to arrticle;DATE ->2022-08-05 19:24:18
+ip address =>127.0.0.1;edit to arrticle;DATE ->2022-08-05 21:17:31
+ip address =>127.0.0.1;edit to arrticle;DATE ->2022-08-05 21:21:09
+ip address =>127.0.0.1;DATE ->2022-11-05 07:52:17
+ip address =>127.0.0.1;Delet to arrticle;DATE ->2022-11-05 08:16:11
+ip address =>127.0.0.1;DATE ->2022-17-05 18:24:23
+ip address =>127.0.0.1;Delet to arrticle;DATE ->2022-17-05 18:24:46
+ip address =>127.0.0.1;DATE ->2022-17-05 18:25:06
+ip address =>127.0.0.1;DATE ->2022-17-05 18:54:25
+ip address =>127.0.0.1;Delet to arrticle;DATE ->2022-17-05 18:59:26
+ip address =>127.0.0.1;DATE ->2022-17-05 20:20:40
+ip address =>127.0.0.1;DATE ->2022-17-05 20:21:43
+ip address =>127.0.0.1;DATE ->2022-17-05 20:22:43

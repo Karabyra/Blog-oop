@@ -1,8 +1,9 @@
 <?php
 	use logs\Logs;
 	use model\Article;
-	include_once('functions.php');		
+	
 	include_once('setting.php');
+	
 	$art = new Article;
 	$log = new Logs;
 	$id = (int)$_GET['id'] ?? "";
@@ -12,7 +13,5 @@
 	 ];
 	$art->removeArticle($id);
 	$log->createLogs($arrayLogs);
-?>
-Message about result
-<hr>
-<a href="index.php">Move to main page</a>
+
+	include('view/v_delete.php');

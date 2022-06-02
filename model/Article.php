@@ -3,25 +3,12 @@ declare(strict_types=1);
 
 namespace model;
 use PDO;
+use core\Dbconnect;
 
-
-class Article{
+class Article extends Dbconnect{
     public function __construct()
-    {
-    
+    { 
     }
-	private function dbInstance() : PDO{
-		static $db;	
-		if($db === null){
-			$db = new PDO('mysql:host=localhost;dbname=blogs', 'root', '', [
-				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-			]);
-			
-			$db->exec('SET NAMES UTF8');
-		}
-		
-		return $db;
-	}
 	public function AddArticle(array $filds):bool
 	{
 		$db = $this->dbInstance();
@@ -35,30 +22,33 @@ class Article{
 		$query->execute($params);
 		return true;
 	}
-	public function getAllArticle():array
+	public function getAllArticle():?array
 	{
 		$db = $this->dbInstance();	
 		$sql = "SELECT * FROM articles ORDER BY dt_create DESC";
 		$query = $db->prepare($sql);
 		$query->execute();
-		return $query->fetchAll();
+		$article = $query->fetchAll();
+		return is_array($article) ? $article:null;
 	}
 	
-	public function getAllCategories():array
+	public function getAllCategories():? array
 	{
 		$db = $this->dbInstance();	
 		$sql = "SELECT * FROM categoryes ";
 		$query = $db->prepare($sql);
 		$query->execute();
-		return $query->fetchAll();
+		$article = $query->fetchAll();
+		return is_array($article) ? $article : null;
 	}
-	public function getArticle(int $id):array
+	public function getArticle(int $id): ?array
 	{
 		$db = $this->dbInstance();	
 		$sql = "SELECT * FROM articles WHERE id_article = $id";
 		$query = $db->prepare($sql);
 		$query->execute();
-		return $query->fetch();
+		$article = $query->fetch();
+		return is_array($article) ? $article:null;
 	}
 	public function removeArticle(int $id):bool
 	{
@@ -67,6 +57,20 @@ class Article{
 		$query = $db->prepare($sql);
 		return $query->execute();
 
+	}
+	public function editArticle(array $arr):bool
+	{
+		$params = [
+			'category'=>$arr['id_category'],
+			'title'=>$arr['title'],
+			'content'=>$arr['content'],
+			'id'=>$arr['id_article']
+		];
+		$db =$this->dbInstance();
+		$sql = "UPDATE articles SET id_category=:category,title=:title,content=:content WHERE id_article=:id";
+		$query = $db->prepare($sql);
+		$query->execute($params);
+		return true;
 	}
 
 	
